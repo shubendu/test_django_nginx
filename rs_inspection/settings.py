@@ -45,7 +45,8 @@ ALLOWED_HOSTS = [
     'inspections.rs-recovery.com',
     'localhost',
     '18.234.9.101',
-    '3.8.1.6'
+    '3.8.1.6',
+    '*'
 ]
 
 # Application definition
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',
 
     # 3rd party apps
     'storages',
@@ -83,7 +85,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # https://github.com/zestedesavoir/django-cors-middleware
     'corsheaders.middleware.CorsMiddleware',
@@ -128,14 +130,25 @@ WSGI_APPLICATION = 'rs_inspection.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if (APP_ENV == 'dev' or APP_ENV == 'staging'):
-    DATABASES = {
-        'default': env.db('STAGING_DATABASE_URL', default='')
+# if (APP_ENV == 'dev' or APP_ENV == 'staging'):
+#     DATABASES = {
+#         'default': env.db('STAGING_DATABASE_URL', default='')
+#     }
+# else:
+#     DATABASES = {
+#         'default': env.db('DATABASE_URL', default='')
+#     }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mydatabase',
+        'USER': 'mydatabaseuser',
+        'PASSWORD': 'mypassword',
+        'HOST': 'myrdshost.rds.amazonaws.com',
+        'PORT': '5432',
     }
-else:
-    DATABASES = {
-        'default': env.db('DATABASE_URL', default='')
-    }
+}
 
 
 # Password validation
@@ -198,29 +211,9 @@ COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
 
-# if(APP_ENV=='dev'):
-STATIC_URL = '/static/'  # '/static/'
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# else:
-#     # Django’s STATIC_URL must end in a slash and the AWS_S3_CUSTOM_DOMAIN must not. It is best to set this variable independently of STATIC_URL.
-#     # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html #
-#     # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
-#     AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID', default='') # django-site
-#     AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY', default='')
-#     AWS_STORAGE_BUCKET_NAME = env.str('AWS_STORAGE_BUCKET_NAME', default='static.rs-recovery.com')
-#     # AWS_S3_ENDPOINT_URL = ''
-#     AWS_S3_REGION_NAME = env.str('AWS_S3_REGION_NAME', default='eu-west-2') # London
-#     # AWS_S3_CUSTOM_DOMAIN = ''
-#     #######
-#     AWS_S3_CUSTOM_DOMAIN = env.str('AWS_S3_CUSTOM_DOMAIN', default='s3.%s.amazonaws.com/%s' % (AWS_S3_REGION_NAME, AWS_STORAGE_BUCKET_NAME))
-#     AWS_S3_OBJECT_PARAMETERS = {
-#         'CacheControl': 'max-age=86400',
-#     }
-#     AWS_LOCATION = env.str('AWS_LOCATION', default='static')
 
-#     STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-#     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
-#     COMPRESS_STORAGE = STATICFILES_STORAGE
+STATIC_URL = '/static/'  # '/static/'
+
 
 COMPRESS_URL = STATIC_URL
 
@@ -266,25 +259,25 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     'localhost:3000'
 # )
 
-if (APP_ENV == 'dev'):
-    SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] = timedelta(minutes=50)
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
-    EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
-    AUTH_PASSWORD_VALIDATORS = []
-else:
-    # https://github.com/django-ses/django-ses
-    DEFAULT_FROM_EMAIL = 'RSR Inspections Portal <noreply@rs-recovery.com>'
-    EMAIL_BACKEND = 'django_ses.SESBackend'
-    AWS_SES_ACCESS_KEY_ID = env.str('AWS_SES_ACCESS_KEY_ID', default='')
-    AWS_SES_SECRET_ACCESS_KEY = env.str(
-        'AWS_SES_SECRET_ACCESS_KEY', default='')
-    AWS_SES_REGION_NAME = 'eu-west-2'  # London
-    AWS_SES_REGION_ENDPOINT = 'email.eu-west-2.amazonaws.com'
+
+SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'] = timedelta(minutes=50)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rs.recovery.staging@gmail.com'
+EMAIL_HOST_PASSWORD = 'rs.recovery.staging@gmail.com'
+EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
+AUTH_PASSWORD_VALIDATORS = []
+# else:
+#     # https://github.com/django-ses/django-ses
+#     DEFAULT_FROM_EMAIL = 'RSR Inspections Portal <noreply@rs-recovery.com>'
+#     EMAIL_BACKEND = 'django_ses.SESBackend'
+#     AWS_SES_ACCESS_KEY_ID = env.str('AWS_SES_ACCESS_KEY_ID', default='')
+#     AWS_SES_SECRET_ACCESS_KEY = env.str(
+#         'AWS_SES_SECRET_ACCESS_KEY', default='')
+#     AWS_SES_REGION_NAME = 'eu-west-2'  # London
+#     AWS_SES_REGION_ENDPOINT = 'email.eu-west-2.amazonaws.com'
 
 
 # Activate Django-Heroku.
