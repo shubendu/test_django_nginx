@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col">
+      <h2>{{ title }}</h2>
+    </div>
+    {% if 'add_user' in global_permissions %}
+    <div class="col text-end">
+      <a class="btn btn-primary" href="{% url 'user-add' %}">+ Add Inspector</a>
+    </div>
+    {% endif %}
+  </div>
+  
+  {% include 'config_app/snippets/_inspectors.html' %}
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="border rounded p-5 bg-white m-auto" style="max-width: 500px;">
+  <h2>{{title}}</h2>
+  <p>{% translate "Thanks for spending some quality time with the Web site today." %}</p>
+  <p><a href="{% url 'contractor_login' %}">{% translate 'Log in again' %}</a></p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+<div class="mb-3 category-header" id="cat-div-{{id}}" style="break-inside: avoid;">
+    <div class="d-flex ">
+        
+        <div class="heading top-heading w-100 d-flex border-end"> 
+            <div class="title"> <!-- Category Name -->
+                <div class="" style="width: 2.5em;">IM</div>
+                <div id="box-row-{{ id }}-label">
+                    <input type="text" 
+                    value="{{ label }}"
+                    name="cat-{{ id }}"
+                    placeholder="Category Name"
+                    title="Category Name"
+                    id="cat-{{ id }}"
+                    required
+                    >
+                </div>
+            </div> <!-- Category Name ends -->
+            
+            <div class="filter">
+                <input class="sort_order" type="number" value="{{cat.sort_order}}" id="box-row-{{ id }}-sort-order" placeholder="sort order" name="sort_order-{{ id }}">
+                <input type="checkbox" onclick="toggle(this, `{{id}}`);">
+            </div> 
+        </div> 
+    </div>
+    <div class="table d-flex flex-row flex-wrap box-row class_question" id="box-row-{{ id }}-questions">
+        <!-- question section -->
+        {% for question in cat.questions.all %}
+        <div class="im-item w-100 d-flex" id="existingQues{{question.id}}"> <!-- Individual question start -->
+            <div class="im-item w-100 d-flex">
+                <div class="cell text-center" style="width: 90px;">
+                    <input type="text" 
+                        class="form-control" 
+                        id="im-{{ id }}-{{ question.id }}"
+                        placeholder="IM" 
+                        value="{{ question.im_array|default:'-' }}"
+                        onkeyup="sendDataToCheckbox('{{id}}','{{question.id}}','{{question.id}}')"
+                    >
+                </div>
+                <div class="cell text-center w-100">
+                    <input type="text"
+                        id="question-{{ id }}-{{ question.id }}"
+                        value="{{ question.question }}"
+                        class="form-control" 
+                        name=""
+                        onkeyup="sendDataToCheckbox('{{id}}','{{question.id}}', '{{question.id}}')" placeholder="Question"
+                    >
+                </div>
+                <div>
+                    <a href="javascript:void(0)" class="text-danger" title="Delete Question" onclick="deleteQuestion(`existingQues{{question.id}}`, `{{question.id}}`)"><i class="bi bi-trash"></i></a>
+                </div>
+                <div class="cell ms-auto text-center fw-bold" style="width:50px;">
+                    <input type="checkbox"
+                        name="{{ question.id }}"
+                        value="{{ question.question }}${{ question.im_array|default:'-' }}"
+                        id="checkbox-{{ id }}-{{ question.id }}" class="{{ id }}"
+                        {% if question.is_enabled %} checked {% endif %}
+                    >
+                </div>
+            </div>
+        </div> <!-- Indivisual question ends -->
+        {% endfor %}
+        <!-- question section ends -->
+    </div>
+    <div class="btn btn-primary mt-2" id="add-question-btn-{{id}}" onclick="addQuestion(`{{id}}` ,`{{attribute}}`)">Add Question</div>
+    <div class="btn btn-outline-danger mt-2 ml-4" onclick="deleteCat('cat-div-{{id}}','{{id}}')">Delete Category</div>
+</div>
+<style>
+    .top-heading{
+        justify-content: space-between; 
+        padding:7px 15px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+    }
+    .top-heading .title{display: flex; gap: 10px;}
+    .top-heading .filter{display: flex; gap:10px;}
+    .top-heading .filter input[type="number"]{width: 110px; margin-right: 15px; }
+
+    .table>.im-item>.cell:first-child{width: 3.4em;}
+</style>

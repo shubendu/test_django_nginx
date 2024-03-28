@@ -1,0 +1,230 @@
+{% extends '_base/base_print.html' %}
+{% load wm_tags static %}
+
+{% block content %}
+<style>
+    body,
+    html {
+        font-size: 10.5pt;
+    }
+
+    .heading {
+        background-color: #103B80 !important;
+        color: white;
+        font-weight: bold;
+        padding: 0.1rem 0.5rem;
+    }
+
+    .table {
+        border-color: #ddd;
+    }
+
+    .table>.item,
+    .table>.im-item {
+        border-bottom: 1px solid;
+        border-right: 1px solid;
+        border-color: inherit;
+    }
+
+    .table>.item>.cell,
+    .table>.im-item>.cell {
+        width: 50%;
+        padding: 0.2rem 0.5rem;
+        border-left: 1px solid;
+        border-color: inherit;
+    }
+
+    .table>.item>.cell:first-child {
+        font-weight: bold;
+    }
+
+    .table>.im-item>.cell {
+        width: auto;
+    }
+
+    .table>.im-item>.cell:first-child {
+        width: 2.5em;
+    }
+</style>
+
+<form action="" method="post" onsubmit="return validateForm()">
+    {% csrf_token %}
+    <input type="text" title="Template Name" class="form-control mb-3" name="name" placeholder="Template name" value="{{name}}" required>
+
+    <div class="">
+        {% for cat in categories %}
+            {% include 'inspection_template/include/category_component_edit.html' with id=cat.id attribute=cat.label label=cat.label %}
+        {% endfor %}
+    </div>
+    <div class="cat-wrap"></div>
+    <div  id="">
+        <div class="btn btn-info mb-2" onclick="addCategory()">Add Category</div>
+    </div>
+    
+    {% include 'inspection_template/include/tyre_brake_section.html' %}
+    <button type="submit" class="btn btn-primary btn-lg btn-block col-12">Update Template</button>
+    <a href="{% url 'delete_template' id %}" class="btn btn-outline-danger btn-lg btn-block col-12 mt-2" onclick="return confirm('Are you sure you want to delete this Template?')" >Delete Template</a>
+</form>
+
+
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="{% static 'js/form_validation.js' %}"></script>
+<script>
+    function addQuestion(id, label) {
+        const spinner = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+        let questionBtn = document.getElementById('add-question-btn-' + id);
+        questionBtn.innerHTML = spinner;
+        questionBtn.disabled = true; // Disable the button to prevent multiple clicks
+        
+        let tempNumber = Math.floor(Math.random() * 10000) + 1;
+        
+        // Use jQuery to perform the GET request
+        $.get("/inspection-template/fetch-custom-question/", {
+            randomNumber: tempNumber,
+            label: label,
+            rowId: id,
+            "type": "edit"
+        }, function (html_string) {
+            // This function is called after the request completes successfully
+            var htmlContent = html_string;
+            $('#box-row-' + id + '-questions').append(htmlContent);
+            
+            // After appending the content, remove the spinner and enable the button
+            questionBtn.innerHTML = 'Add Question'; // Change this text to whatever the button should say after loading
+            questionBtn.disabled = false; // Re-enable the button
+        }, 'html')
+        .fail(function() {
+            // This is called if the request fails, you can handle errors here
+            questionBtn.innerHTML = 'Add Question'; // Reset button text on failure
+            questionBtn.disabled = false; // Re-enable the button even if request fails
+            alert('Error: Server error occured.'); // Provide feedback in case of failure
+        });
+}
+
+    function addQuestionOnNewCat(eleid, label) {
+        var catdiv = document.getElementById(eleid);
+        var rowId = catdiv.getAttribute('categoryId');
+        let tempNumber = Math.floor(Math.random() * 10000) + 1;
+        $.get("/inspection-template/fetch-custom-question/",
+            { randomNumber: tempNumber, label: label, rowId: rowId, "type": "edit" },
+            function (html_string) {
+                var htmlContent = html_string;
+                $('#box-row-' + rowId + '-questions').append(htmlContent);
+            }, 'html'
+        );
+    }
+    function addCategory() {
+        var currentId = $('.category-header').length;
+        $.get("/inspection-template/fetch-custom-category/",
+            { id: currentId + 1, "type": "edit"},
+            function (html_string) {
+                var htmlContent = html_string;
+                $('.cat-wrap').append(htmlContent);
+            }, 'html'
+        );
+    }
+
+    function toggle(source, id) {
+        var checkboxes = document.getElementsByClassName(id);
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+    }
+
+    function sendDataToCheckbox(rowId, randomNumber, questionId = null) {
+        let elementId = rowId + '-' + randomNumber;
+
+        let checkbox = document.getElementById('checkbox-' + elementId);
+        let question = document.getElementById('question-' + elementId);
+        let im = document.getElementById('im-' + elementId);
+        // set the question and IM value as the checkbox value
+        checkbox.value = question.value + '$' + im.value;
+        // set the checkbox name as the category name + $ + elementId
+        // tempId is the random number used just to distinguish the checkbox in backend
+        categoryName = document.getElementById('cat-'+ rowId).value;
+        checkbox.name = questionId ? questionId : rowId;
+    }
+    function createCategory(element, oldId) {
+        let divEle = document.getElementById('box-row-' + oldId + '-label');
+        // create a random number to distinguish the category
+        let tempId = Math.floor(Math.random() * 10000) + 1;
+        let newId = "newCat" + tempId;
+        divEle.setAttribute('categoryId', newId);
+
+        let catInput = divEle.getElementsByTagName('input');
+        catInput[0].id = "cat-" + newId;
+
+        let questionsDiv = document.getElementById('box-row-' + newId + '-questions');
+        questionsDiv.id = "box-row-" + newId + "-questions";
+    }
+    function deleteCatFromDB(instanceid) {
+        // Return a new Promise
+        return new Promise((resolve, reject) => {
+            $.get("/inspection-template/delete-object/",
+            { id: instanceid, "type": "category"},
+            function (response) {
+                if (response.status == 'success') {
+                    resolve(true); // Resolve the promise with true
+                } else {
+                    reject(false); // Reject the promise with false
+                }
+            });
+        });
+    }
+
+    function deleteCat(catDivId, instanceid=null) {
+        if (instanceid) {
+            // Use the promise returned by deleteCatFromDB
+            deleteCatFromDB(instanceid).then(resp => {
+                $(`#${catDivId}`).hide('slow');
+                let catDiv = document.getElementById(catDivId);
+                setTimeout(() => {
+                    catDiv.remove();
+                }, 2000); // Ensure jQuery's hide() has completed
+            }).catch(error => {
+                // Handle the error or rejection case
+                alert('Error! Category not deleted.');
+                return;
+            });
+        } else {
+            // If instanceid is not provided, just hide and remove the element
+            $(`#${catDivId}`).hide('slow');
+            let catDiv = document.getElementById(catDivId);
+            setTimeout(() => {
+                catDiv.remove();
+            }, 2000);
+        }
+    }
+    function deleteQuestion(questionDivId, existingQuestionId=null) {
+        if (existingQuestionId) {
+            $.get("/inspection-template/delete-object/",
+            { id: existingQuestionId, "type": "question"},
+            function (response) {
+                if (response.status == 'success') {
+                    $(`#${questionDivId}`).hide('slow');
+                    let questionDiv = document.getElementById(questionDivId);
+                    setTimeout(() => {
+                        questionDiv.remove();
+                    }, 500);
+                } else {
+                    alert('Error! Question not deleted.');
+                    return;
+                }
+            });
+        } else {
+        $(`#${questionDivId}`).hide('slow');
+            let questionDiv = document.getElementById(questionDivId);
+            setTimeout(() => {
+                questionDiv.remove();
+            }, 500);
+        }
+    }
+
+</script>
+{% endblock %}

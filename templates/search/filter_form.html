@@ -1,0 +1,66 @@
+<form method="GET" class="form my-2 my-lg-0 search-form" action="{% url 'search:query' %}">
+    <h5>Filter by</h5>
+    <hr>
+
+    <div>
+        <h6>Vehicle Type</h6>
+        <div class="form-check">
+            <input type="radio" {% if vehicle_type == "trailer" %}checked{% endif %} id="trailer" name="vehicleType" value="trailer" class="form-check-input">
+            <label for="trailer" class="form-check-label">Trailer</label>
+        </div>
+    
+        <div class="form-check">
+            <input type="radio" {% if vehicle_type == "powered" %}checked{% endif %} id="powered" name="vehicleType" value="powered" class="form-check-input">
+            <label for="powered" class="form-check-label">Powered vehicle</label>
+        </div>
+    </div>
+    
+
+    <hr>
+
+    <div>
+        <h6>Inspection Date Range</h6>
+        <div class="form-group">
+            <label for="startDate">From :</label>
+            <input type="date" id="startDate" value="{{start_date}}" name="startDate" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="endDate">To :</label>
+            <input type="date" id="endDate" value="{{end_date}}" name="endDate" class="form-control">
+        </div>
+    </div>
+    <hr>
+
+    <button class="btn btn-outline-primary mt-3" type="submit">Submit</button>
+    <button class="btn btn-outline-secondary mt-3" id="clearButton" type="button">Clear</button>
+</form>
+
+
+<script>
+    var startDateInput = document.getElementById('startDate');
+    var endDateInput = document.getElementById('endDate');
+    var clearButton = document.getElementById('clearButton');
+
+    // Get today's date
+    var today = new Date().toISOString().split('T')[0];
+
+    // Set the minimum and maximum dates for the start date input
+    startDateInput.setAttribute('max', today);
+    endDateInput.setAttribute('max', today);
+
+    // Update the minimum date for the end date input when the start date changes
+    startDateInput.addEventListener('input', function () {
+        endDateInput.setAttribute('min', startDateInput.value);
+    });
+
+    // Clear button click event handler
+    clearButton.addEventListener('click', function () {
+        var vehicleType = document.getElementsByName('vehicleType');
+        startDateInput.value = '';
+        endDateInput.value = '';
+        vehicleType.forEach(element => {
+            element.checked = false;
+        });
+    });
+</script>

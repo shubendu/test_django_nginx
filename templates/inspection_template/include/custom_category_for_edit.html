@@ -1,0 +1,34 @@
+<div class="mb-3 custom-category-div category-header" id="cat-div-{{id}}" style="break-inside: avoid;">
+    <div class="d-flex ">
+        <div class="heading top-heading w-100 d-flex border-end">
+            <div class="title">
+                <div class="" style="width: 2.5em;">IM</div>
+                <div id="box-row-{{ id }}-label" categoryId="{{id}}">
+                    <input type="text" name="{{id}}" placeholder="Category Name" id="cat-{{id}}" required>
+                </div>
+            </div>
+
+            <div class="filter">
+                <input type="number" class="sort_order" id="box-row-{{ id }}-sort-order" name="{{id}}" placeholder="sort order">
+                <input type="checkbox" onclick="toggle(this, `{{id}}`);">
+            </div>
+        </div>
+    </div>
+    <div class="table d-flex flex-row flex-wrap box-row class_question" id="box-row-{{ id }}-questions">
+    </div>
+    <div class="btn btn-primary mt-2" onclick="addQuestionOnNewCat('box-row-{{ id }}-label' ,`{{attribute}}`)">Add Question</div>
+    <div class="btn btn-outline-danger mt-2 ml-4" onclick="deleteCat('cat-div-{{id}}')">Delete Category</div>
+</div>
+
+<style>
+    .top-heading{
+        justify-content: space-between; 
+        padding:7px 15px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+    }
+    .top-heading .title{display: flex; gap: 10px;}
+    .top-heading .filter{display: flex; gap:10px;}
+    .top-heading .filter input[type="number"]{width: 110px; margin-right: 15px;}
+    .table>.im-item>.cell:first-child{width: 3.4em;}
+</style>

@@ -1,0 +1,152 @@
+{% extends '_base/base_print.html' %}
+{% load wm_tags static %}
+
+{% block content %}
+<style>
+    body,
+    html {
+        font-size: 10.5pt;
+    }
+
+    .heading {
+        background-color: #103B80 !important;
+        color: white;
+        font-weight: bold;
+        padding: 0.1rem 0.5rem;
+    }
+
+    .table {
+        border-color: #ddd;
+    }
+
+    .table>.item,
+    .table>.im-item {
+        border-bottom: 1px solid;
+        border-right: 1px solid;
+        border-color: inherit;
+    }
+
+    .table>.item>.cell,
+    .table>.im-item>.cell {
+        width: 50%;
+        padding: 0.2rem 0.5rem;
+        border-left: 1px solid;
+        border-color: inherit;
+    }
+
+    .table>.item>.cell:first-child {
+        font-weight: bold;
+    }
+
+    .table>.im-item>.cell {
+        width: auto;
+    }
+
+    .table>.im-item>.cell:first-child {
+        width: 2.5em;
+    }
+</style>
+
+<form action="" method="post" onsubmit="return validateForm()">
+    {% csrf_token %}
+    <input type="text" class="form-control mb-3" name="name" placeholder="Template name" required>
+
+<div class="">
+    {% if vehicle_type == 'powered' %}
+        {% include 'inspection_template/include/category_component.html' with id='15' attribute='underVehicleQuestions' label='Under Vehicle' questions=underVehicleQuestions %}
+        {% include 'inspection_template/include/category_component.html' with id='4' attribute='cabQuestions' label='Cab' questions=cabQuestions %}
+        {% include 'inspection_template/include/category_component.html' with id='7' attribute='groundLevelQuestions' label='Ground Level' questions=groundLevelQuestions %}
+
+        {% include 'inspection_template/include/category_component.html' with id='6' attribute='engineServiceQuestions' label='Engine Service' questions=engineServiceQuestions %}
+    {% elif vehicle_type == 'trailer' %}
+        {% include 'inspection_template/include/category_component.html' with id='14' attribute='underTrailerQuestions' label='Under / Alongside Trailer' questions=underTrailerQuestions %}
+        {% include 'inspection_template/include/category_component.html' with id='11' attribute='trailerSuspension' label='Suspension' questions=trailerSuspension %}
+        {% include 'inspection_template/include/category_component.html' with id='5' attribute='drawbarTrailers' label='Steering - Drawbar Trailers' questions=drawbarTrailers %}
+        {% include 'inspection_template/include/category_component.html' with id='9' attribute='trailerBrakes' label='Brakes' questions=trailerBrakes %}
+        {% include 'inspection_template/include/category_component.html' with id='10' attribute='trailerLampsReflectors' label='Markings, Lamps and Reflectors' questions=trailerLampsReflectors %}
+        {% include 'inspection_template/include/category_component.html' with id='12' attribute='trailerTyreQuestions' label='Tyres' questions=trailerTyreQuestions %}
+    {% endif %}
+    
+    {% include 'inspection_template/include/category_component.html' with id='1' attribute='aServiceQuestions' label='A Service' questions=aServiceQuestions %}
+    {% include 'inspection_template/include/category_component.html' with id='3' attribute='brakingSystemQuestions' label='Braking System Tests' questions=brakingSystemQuestions %}
+    {% include 'inspection_template/include/category_component.html' with id='8' attribute='otherQuestions' label='Other' questions=otherQuestions %}
+    {% comment %}
+    {% include 'inspection_template/include/category_component.html' with id='2' attribute='brakeQuestions' label='Brake Checks & Tests' questions=brakeQuestions %}
+    {% include 'inspection_template/include/category_component.html' with id='13' attribute='tyreQuestions' label='Tyres' questions=tyreQuestions %}
+    {% endcomment %}
+    
+</div>
+<div class="cat-wrap"></div>
+<div  id="">
+    <div class="btn btn-info mb-2" onclick="addCategory()">Add Category</div>
+</div>
+
+{% include 'inspection_template/include/tyre_brake_section.html' %}
+<button type="submit" class="btn btn-primary btn-lg btn-block col-12">Submit</button>
+</form>
+
+
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script src="{% static 'js/form_validation.js' %}"></script>
+<script>
+    function addQuestion(id, label) {
+        let tempNumber = Math.floor(Math.random() * 10000) + 1;
+        $.get("/inspection-template/fetch-custom-question/",
+            { randomNumber: tempNumber, label: label, rowId: id },
+            function(html_string){
+                var htmlContent = html_string;
+                $('#box-row-'+id+'-questions').append(htmlContent);
+            },'html'
+        );
+    }
+    function addCategory() {
+        var currentId = $('.category-header').length;
+        $.get("/inspection-template/fetch-custom-category/",
+            { id: currentId+100, },
+            function(html_string){
+                var htmlContent = html_string;
+                $('.cat-wrap').append(htmlContent);
+            },'html'
+        );
+    }
+
+    function toggle(source, id) {
+        var checkboxes = document.getElementsByClassName(id);
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+    }
+
+    function sendDataToCheckbox(tempId, rowId) {
+        let checkbox = document.getElementById('checkbox-'+tempId);
+        let question = document.getElementById('question-'+tempId);
+        let im = document.getElementById('im-'+tempId);
+        // set the question and IM value as the checkbox value
+        checkbox.value = question.value + '@' + im.value ;
+        // set the checkbox name as the category name + $ + tempId
+        // tempId is the random number used just to distinguish the checkbox in backend
+        categoryNameInput = document.getElementById('box-row-'+rowId+'-label').getElementsByTagName('input');
+        categoryName = categoryNameInput[0].value;
+        checkbox.name = categoryName+'$'+tempId;
+    }
+    function deleteCat(catDivId, instanceid=null) {
+        $(`#${catDivId}`).hide('slow');
+        let catDiv = document.getElementById(catDivId);
+        setTimeout(() => {
+            catDiv.remove();
+        }, 2000);
+    }
+    function deleteQuestion(questionDivId) {
+        $(`#${questionDivId}`).hide('slow');
+            let questionDiv = document.getElementById(questionDivId);
+            setTimeout(() => {
+                questionDiv.remove();
+            }, 500);
+        }
+</script>
+{% endblock %}

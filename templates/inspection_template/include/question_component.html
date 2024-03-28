@@ -1,0 +1,26 @@
+<div class="mb-3" style="break-inside: avoid;">
+    <div class="d-flex ">
+        <div class="heading w-100 d-flex border-end">
+            <div class="" style="width: 2.5em;">IM</div>
+            <div id="box-row-{{ id }}-label">{{ label }}</div>
+            <input type="checkbox" style="margin-left: auto;" onclick="toggle(this, `{{id}}`);">
+        </div>
+    </div>
+    <div class="table d-flex flex-row flex-wrap box-row class_question" id="box-row-{{ id }}-questions">
+        {% for question in questions %}
+        <div class="im-item w-100 d-flex">
+            <div class="cell text-center">{{ question.im|default:'-' }}</div>
+            <div class="cell text-center">{{ question.question }}</div>
+            <div class="cell ms-auto text-center fw-bold" style="width:52px;">
+                <input type="checkbox" name="{{ attribute }}${{ question.question }}"
+                    value="{{ question.question }}@{{ question.im|default:'-' }}" id="" class="{{ id }}">
+            </div>
+            <div class="cell ms-auto text-center fw-bold" style="width:52px;">
+                <!-- add a link to delete question -->
+                <a href="javascript:void(0)" class="text-danger" id="myid{{id}}" onclick="deleteQuestion(`{{question.id}}`)">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="btn btn-primary mt-2" onclick="addRow(`{{id}}` ,`{{attribute}}`)">Add Question</div>
+</div>

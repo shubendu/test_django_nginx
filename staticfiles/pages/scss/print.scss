@@ -1,0 +1,53 @@
+@import 'variables';
+@import 'bootstrap/bootstrap';
+
+@import 'inspection-detail';
+
+html,body{
+  // background: #f0f0f0;
+}
+
+a:hover{
+  &[class^='bg-'],
+  [class^='bg-'],
+  &[class*=' bg-'],
+  [class*=' bg-']{
+    transition: background-color 0.3s;
+  }
+}
+
+a.bg-success,
+a .bg-success{
+  &:hover{
+    background-color: darken($success, 5%) !important;
+  }
+}
+
+a.bg-primary,
+a .bg-primary{
+  &:hover{
+    background-color: darken($primary, 7%) !important;
+  }
+}
+
+a.bg-danger,
+a .bg-danger{
+  &:hover{
+    background-color: darken($danger, 5%) !important;
+  }
+}
+
+a.bg-secondary,
+a .bg-secondary{
+  &:hover{
+    background-color: darken($secondary, 5%) !important;
+  }
+}
+
+a.bg-warning,
+a .bg-warning{
+  &:hover{
+    background-color: darken($warning, 5%) !important;
+  }
+}
+

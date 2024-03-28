@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row mb-5">
+  <div class="col-md-6"><h2>Profiles</h2></div>  
+  {% if request.user.is_superuser %}
+  <div class="col-md-6">
+    <a class="float-end btn btn-primary bi-upload" href="{% url 'upload_vehicle_page' %}"> Upload Vehicles</a>
+  </div>  
+  {% endif %}
+</div>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col" title="ID">
+        <a href="?order={% if request.GET.order == 'id' %}-{% endif %}id">#</a>
+        {% if request.GET.order == 'id' %}<i class="bi bi-sort-numeric-down" style="font-size: 1.1em;"></i>{% endif %}
+        {% if request.GET.order == '-id' %}<i class="bi bi-sort-numeric-up-alt" style="font-size: 1.1em;"></i>{% endif %}
+      </th>
+      <th scope="col" title="Reference number" >
+        <a href="?order={% if request.GET.order == 'ref' %}-{% endif %}ref">Ref</a>
+        {% if request.GET.order == 'ref' %}<i class="bi bi-sort-alpha-down" style="font-size: 1.1em;"></i>{% endif %}
+        {% if request.GET.order == '-ref' %}<i class="bi bi-sort-alpha-up-alt" style="font-size: 1.1em;"></i>{% endif %}
+      </th>
+      <th scope="col">
+        <a href="?order={% if request.GET.order == 'item_type' %}-{% endif %}item_type">Type</a>
+        {% if request.GET.order == 'item_type' %}<i class="bi bi-sort-alpha-down" style="font-size: 1.1em;"></i>{% endif %}
+        {% if request.GET.order == '-item_type' %}<i class="bi bi-sort-alpha-up-alt" style="font-size: 1.1em;"></i>{% endif %}
+      </th>
+      <th scope="col">
+        <a href="?order={% if request.GET.order == 'created' %}-{% endif %}created">Created</a>
+        {% if request.GET.order == 'created' %}<i class="bi bi-sort-down" style="font-size: 1.1em;"></i>{% endif %}
+        {% if request.GET.order == '-created' %}<i class="bi bi-sort-up-alt" style="font-size: 1.1em;"></i>{% endif %}
+      </th>
+      <th scope="col">
+        <a href="?order={% if request.GET.order == 'created_by' %}-{% endif %}created_by">Created by</a>
+        {% if request.GET.order == 'created_by' %}<i class="bi bi-sort-alpha-down" style="font-size: 1.1em;"></i>{% endif %}
+        {% if request.GET.order == '-created_by' %}<i class="bi bi-sort-alpha-up-alt" style="font-size: 1.1em;"></i>{% endif %}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+{% for profile in object_list %}
+  <tr onclick="location.href = '{% url 'inspection-items-detail' profile.pk %}';" style="cursor: pointer;">
+    <td>{{profile.pk}}</td>
+    <th scope="row">{{profile.ref}}</th>
+    <td>{{profile.item_type}}</td>
+    <td>{{profile.created|date }}</td>
+    <td>{{profile.created_by.get_full_name}}</td>
+  </tr>
+{% empty %}
+    <tr><td>No inspections yet.</td></tr>
+{% endfor %}
+  </tbody>
+</table>
+
+{% include 'utils/_paginator.html' %}
+
+{% endblock content %}

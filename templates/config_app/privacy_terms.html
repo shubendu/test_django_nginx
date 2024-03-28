@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load markdown_extras %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    {% comment %}
+        {% if object %}
+            <p>{{ object.content | markdown | safe }}</p>
+        {% else %}
+            <p>{{ message}}</p>
+        {% endif %}
+    {% endcomment %}
+
+    {% if object %}
+        <p> {{object.content|safe}} </p>
+    {% else %}
+        <p>{{ message}} </p>
+    {% endif %}
+</div>
+{% endblock %}

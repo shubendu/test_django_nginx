@@ -1,0 +1,19 @@
+<div class="im-item w-100 d-flex" id="newQues{{randomNumber}}">
+    <div class="im-item w-100 d-flex">
+    <div class="cell text-center" style="width: 90px;">
+        <input type="text" onkeyup="sendDataToCheckbox('{{rowId}}', '{{randomNumber}}')"
+            class="form-control" id="im-{{rowId}}-{{randomNumber}}" placeholder="IM">
+    </div>
+    <div class="cell text-center w-100">
+        <input type="text" class="form-control" name="" id="question-{{rowId}}-{{randomNumber}}"
+        onkeyup="sendDataToCheckbox('{{rowId}}', '{{randomNumber}}')" placeholder="Question">
+    </div>
+    <div class="cell ms-auto text-center fw-bold mt-2" title="Delete Question">
+        <a href="javascript:void(0)" title="Delete Question" class="text-danger" onclick="deleteQuestion(`newQues{{randomNumber}}`)"><i class="bi bi-trash"></i></a>
+    </div>
+    <div class="cell ms-auto cell d-flex align-items-center justify-content-center ms-auto text-center fw-bold" style="width:52px;">
+        <input type="checkbox"
+            name="{{label}}$" id="checkbox-{{rowId}}-{{randomNumber}}" class="{{rowId}}" value="" checked>
+    </div>
+</div>
+</div>

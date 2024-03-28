@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}| Upload Vehicles{% endblock %}
+
+
+{% block content %}
+
+<div class="declaration border border-warning rounded px-4 pt-3">
+    <h3>Upload Vehicles</h3>
+    <p>The vehicle upload feature lets you add multiple vehicles 
+        by populating an Excel (XLSX) workbook and uploading here.
+    </p>
+
+    <strong>
+        The format of the file and data is important, so you must download
+        <a href="{% static 'file-templates/vehicle-template.xlsx' %}"> the vehicle template XLSX file
+            <img src="" />
+        </a>
+            to start and populate your data there.
+    </strong>
+
+    <div style="margin-top: 20px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" title="Upload excel file" name="excel_file"
+                style="border: 1px solid black; padding: 5px;" required="required">
+
+            <input type="submit" value="Upload" class="btn btn-primary">
+
+        </form>
+
+        <p></p>
+    </div>
+</div>
+
+
+
+
+{% for key, value in errors.items %}
+<span class="text-danger"> *{{ key }} : {{value}} </span>
+<br>
+{% endfor %}
+
+{% endblock content %}

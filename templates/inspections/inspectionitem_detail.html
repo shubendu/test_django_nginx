@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load wm_tags %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    
+    <li class="breadcrumb-item active" aria-current="page"><a class="" href="{% url 'inspection-items-list' %}">Profile list</a></li>
+    <li class="breadcrumb-item active">{{object}}</li>
+  </ol>
+</nav>
+<h2>{{object}}</h2>
+
+<table class="table table-sm w-auto">
+  {% if object.get_json.registration_no %}
+    <tr>
+      <th class="text-start">Registration number</th>
+      <td>{{ object.get_json.registration_no }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.ministry_no %}
+    <tr>
+      <th class="text-start">Ministry number</th>
+      <td>{{ object.get_json.ministry_no }}</td>
+    </tr>
+  {% endif %}
+
+  {% if not object.get_json.registration_no and not object.get_json.ministry_no and object.get_json.ref %}
+    <tr>
+      <th class="text-start">Reference</th>
+      <td>{{ object.get_json.ref }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.chassis_no %}
+    <tr>
+      <th class="text-start">Chassis number</th>
+      <td>{{ object.get_json.chassis_no }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.dvsa_id %}
+    <tr>
+      <th class="text-start">DVSA ID</th>
+      <td>{{ object.get_json.dvsa_id }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.item_type %}
+    <tr>
+      <th class="text-start">Type</th>
+      <td>{{object.item_type}}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.body_type %}
+    <tr>
+      <th class="text-start">Body type</th>
+      <td>{{object.body_type}}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.make %}
+    <tr>
+      <th class="text-start">Make</th>
+      <td>{{ object.get_json.make }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.model %}
+    <tr>
+      <th class="text-start">Model</th>
+      <td>{{ object.get_json.model }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.year %}
+    <tr>
+      <th class="text-start">Year</th>
+      <td>{{ object.get_json.year|jsondate|date:'Y' }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.operator_name %}
+    <tr>
+      <th class="text-start">Operator name</th>
+      <td>{{ object.get_json.operator_name }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.fleet_no %}
+    <tr>
+      <th class="text-start">Fleet number</th>
+      <td>{{ object.get_json.fleet_no }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.description %}
+    <tr>
+      <th class="text-start">Description</th>
+      <td>{{ object.get_json.description }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.tacho_2yr %}
+    <tr>
+      <th class="text-start">Tacho 2 year</th>
+      <td>{{ object.get_json.tacho_2yr }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.tacho_6yr %}
+    <tr>
+      <th class="text-start">Tacho 6 year</th>
+      <td>{{ object.get_json.tacho_6yr }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.mot_exp %}
+    <tr>
+      <th class="text-start">MOT expiration</th>
+      <td>{{ object.get_json.mot_exp|jsondate|date:'d F Y' }}</td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.axles %}
+    <tr>
+      <th class="text-start">Axels</th>
+      <td>
+        {{ object.get_json.axles|length }}
+        ({% for axel in object.get_json.axles %}
+          {% if axel.doubleWheel %}Double{% else %}Single{% endif %}
+        {% endfor %})
+      </td>
+    </tr>
+  {% endif %}
+
+  {% if object.get_json.spares and object.get_json.spares > 0 %}
+    <tr>
+      <th class="text-start">Spares</th>
+      <td>{{ object.get_json.spares }}</td>
+    </tr>
+  {% endif %}
+
+</table>
+<!--
+{% for key in object.get_json %}
+    {{key|capfirst}}:
+    {{object.get_json|get:key}}
+
+{% endfor %}
+-->
+
+<h3>Inspections</h3>
+{% include 'inspections/_inspections.html' with inspections=object_list %}
+
+{% comment %} {{ object.get_json }} {% endcomment %}
+{% endblock content %}

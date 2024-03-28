@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<span class="text-center"><h2>{{ title }}</h2></span>
+<br>
+<div class="row">
+    <div class="col-md-4">
+        <a href="{% url 'inspector_list' %}"> 
+            <button class="btn btn-info"> Manage Inspector </button>
+        </a> 
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% include "_base/footer.html" %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'inspector_list' %}">Inspector List</a></li>
+      <li class="breadcrumb-item active">{{object.username}}</li>
+    </ol>
+  </nav>
+  <div class="row">
+    <div class="col">
+      <h2>{{ object.get_full_name }}</h2>
+    </div>
+    {% if 'auth.change_user' in perms %}
+    <div class="col text-end">
+      <a class="btn btn-primary" href="{% url 'user-edit' object.pk %}">Edit</a>
+      {% comment %} <a class="btn btn-danger" href="{% url 'user-delete' object.pk %}">Delete</a> {% endcomment %}
+    </div>
+    {% endif %}
+  </div>
+
+  <table class="table table-sm w-auto">
+    <tr>
+      <th class="text-start">Active</th>
+      <td class="{% if object.is_active %}text-success{% else %}text-danger{% endif %}">
+        {% if object.is_active %}Active{% else %}Disabled{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th class="text-start">Username</th>
+      <td>{{ object.username }}</td>
+    </tr>
+    <tr>
+      <th class="text-start">First name</th>
+      <td>{{ object.first_name }}</td>
+    </tr>
+    <tr>
+      <th class="text-start">Last name</th>
+      <td>{{ object.last_name }}</td>
+    </tr>
+    {% comment %} <tr>
+      <th class="text-start">Email</th>
+      <td><a href="mailto:{{object.email}}" target="_blank">{{ object.email }}</a></td>
+    </tr> {% endcomment %}
+    <tr>
+      <th class="text-start">Contractor</th>
+      <td>{{ object.profile.contractor.name }}</td>
+    </tr>
+    <tr>
+      <th class="text-start">Groups</th>
+      <td>
+        {% for group in object.groups.all %}<span class="badge bg-secondary">{{ group.name }}</span> {% endfor %}
+        {% if user.is_staff %}<span class="badge bg-warning">Staff</span>{% endif %}
+        {% if user.is_superuser %}<span class="badge bg-danger">Super Admin</span>{% endif %}
+      </td>
+    </tr>
+  </table>
+  
+
+  <h3>Inspections Submitted</h3>
+  {% include 'inspections/_inspections.html' with inspections=object_list %}
+  
+{% endblock content %}

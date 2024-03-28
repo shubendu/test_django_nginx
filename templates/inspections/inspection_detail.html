@@ -1,0 +1,550 @@
+{% extends 'base.html' %}
+{% load wm_tags %}
+{% load markdown_extras %}
+
+{% block content %}
+<div class="inspection-detail">
+  <a class="float-end btn btn-link btn-lg" href="{% url 'generate_pdf' object.pk %}" target="_blank"><i class="bi bi-download"></i></a>
+  <a class="float-end btn btn-link btn-lg" href="{% url 'inspections-detail-print' object.pk %}" target="_blank"><i class="bi bi-printer"></i></a>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'inspections-list' %}">Inspection list</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'inspection-items-detail' object.inspection_item.pk %}">{{ object.inspection_item }}</a></li>
+      <li class="breadcrumb-item active">#{{object.pk}}</li>
+    </ol>
+    
+  </nav>
+  <h2>{{object}}</h2>
+
+  <table class="table table-sm w-auto">
+    
+    {% if object.submitted %}
+      <tr>
+        <th class="text-start">Submitted on</th>
+        <td>{{ object.submitted|date }}</td>
+      </tr>
+    {% endif %}
+
+    {% if object.submitted_by %}
+      <tr>
+        <th class="text-start">Submitted by</th>
+        <td>{{ object.submitted_by.get_full_name }}</td>
+      </tr>
+    {% endif %}
+
+    {% if object.get_json.signature %}
+      <tr>
+        <th class="text-start">Signature</th>
+        <td><img style="max-height: 100px" src="{{object.get_json.signature}}" /></td>
+      </tr>
+    {% endif %}
+
+  </table>
+
+  {% comment %} <h4>Profile</h4> {% endcomment %}
+  {% comment %} <table class="table w-auto">
+
+    {% if object.get_json.item.ref %}
+      <tr>
+        <th class="text-start">Registration</th>
+        <td>{{ object.get_json.item.ref }}</td>
+      </tr>
+    {% endif %}
+    
+  </table> {% endcomment %}
+
+
+  <hr/>
+
+  {% with contractor=object.submitted_by.profile.contractor %}
+    <table class="contractor w-100" >
+      <tbody>
+        <tr>
+          <td class="border-none" style="vertical-align: top;">
+            <h4 class="m-0">{{contractor.name}}</h4>
+          </td>
+          <td class="border-none">
+            <address class="text-end">
+              {{contractor.name}}
+              , {{contractor.address1}}
+              {% if contractor.address2 %}, {{contractor.address2}}{% endif %}
+              <br/>
+              {{contractor.town}}
+              , {{contractor.county}}
+              , {{contractor.postcode}}
+            </address>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% endwith %}
+
+  {% with item=object.get_json.item %}
+    <table class="first table">
+      <thead class="table-primary"><tr><th colspan="2">Profile</th></tr></thead>
+      <tbody>
+        <tr>
+          <th class="w-50">Type</th>
+          <td>{{item.type.label}}</td>
+        </tr>
+        {% if item.registration_no %}
+          <tr>
+            <th>Registration Number</th>
+            <td>{{item.registration_no}}</td>
+          </tr>
+        {% endif %}
+        {% if item.ministry_no %}
+          <tr>
+            <th>Ministry Number</th>
+            <td>{{item.ministry_no}}</td>
+          </tr>
+        {% endif %}
+
+        <tr>
+          <th>Make</th>
+          <td>{{item.make}}</td>
+        </tr>
+
+        <tr>
+          <th>Model</th>
+          <td>{{item.model}}</td>
+        </tr>
+
+        <tr>
+          <th>Operator</th>
+          <td>{{item.operator_name}}</td>
+        </tr>
+      {% comment %} </tbody>
+    </table>
+
+    <table  class="second table">
+      <thead class="table-primary"><tr><th colspan="2">&nbsp;</th></tr></thead>
+      <tbody> {% endcomment %}
+        {% if item.description %}
+          <tr>
+            <th class="w-50">Description</th>
+            <td>{{item.description }}</td>
+          </tr>
+        {% endif %}
+        {% if item.year %}
+          <tr>
+            <th class="w-50">Year</th>
+            <td>{{item.year|jsondate|date:'Y'}}</td>
+          </tr>
+        {% endif %}
+        {% if item.tacho_2yr %}
+          <tr>
+            <th>Tachograph 2yr</th>
+            <td>{{item.tacho_2yr }}</td>
+          </tr>
+        {% endif %}
+        {% if item.tacho_6yr %}
+          <tr>
+            <th class="w-50">Tachograph 6yr</th>
+            <td>{{item.tacho_6yr}}</td>
+          </tr>
+        {% endif %}
+        {% if item.fleet_no %}
+          <tr>
+            <th class="w-50">Fleet Number</th>
+            <td>{{item.fleet_no}}</td>
+          </tr>
+        {% endif %}
+        {% if item.chassis_no %}
+          <tr>
+            <th class="w-50">Chassis Number</th>
+            <td>{{item.chassis_no}} </td>
+          </tr>
+        {% endif %}
+        {% if item.dvsa_id %}
+        <tr>
+          <th class="w-50">DVSA ID Number</th>
+          <td>{{item.dvsa_id}}</td>
+        </tr>
+        {% endif %}
+        {% if item.body_type %}
+          <tr>
+            <th class="w-50">Body Type</th>
+            <td>{{item.body_type}}</td>
+          </tr>
+        {% endif %}
+        {% if item.odometer %}
+          <tr>
+            <th class="w-50">Odometer</th>
+            <td>{{item.odometer}}</td>
+          </tr>
+        {% endif %}
+        {% if item.hubometer %}
+          <tr>
+            <th class="w-50">Hubometer</th>
+            <td>{{item.hubometer}}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  {% endwith %}
+
+  {% with inspection=object.get_json %}
+    <table class="first table w-100">
+      <thead class="table-primary"><tr><th colspan="2">Inspection</th></tr></thead>
+      <tbody>
+        <tr>
+          <th class="w-50">Started</th>
+          <td>{{inspection.created|jsondate|date}}</td>
+        </tr>
+        <tr>
+          <th>Last modified</th>
+          <td>{{inspection.modified|jsondate|date}}</td>
+        </tr>
+        {% if inspection.item.inspection_date %}
+          <tr>
+            <th>Inspection Date</th>
+            <td>{{inspection.item.inspection_date|jsondate|date}}</td>
+          </tr>
+        {% endif %}
+      {% comment %} </tbody>
+    </table>
+    <table class="second" >
+      <thead class="table-primary"><tr><th colSpan={2}>&nbsp;</th></tr></thead>
+      <tbody> {% endcomment %}
+        {% if inspection.item.inspection_location %}
+          <tr>
+            <th>Inspection Location</th>
+            <td>{{inspection.item.inspection_location}}</td>
+          </tr>
+        {% endif %}
+        {% if inspection.item.job_no %}
+          <tr>
+            <th>Job Number</th>
+            <td>{{inspection.item.job_no}}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  {% endwith %}
+
+  {% with user=object.submitted_by %}
+    <table  class="first user table w-100">
+      <thead class="table-primary"><tr><th colspan="2">User</th></tr></thead>
+      <tbody>
+        <tr>
+          <th class="w-50">Name</th>
+          <td>{{ user.get_full_name }}</td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>{{user.email}}</td>
+        </tr>
+        
+      {% comment %} </tbody>
+    </table>
+    <table  class="second user" >
+      <thead class="table-primary"><tr><th colSpan={2}></th></tr></thead>
+      <tbody> {% endcomment %}
+        <tr>
+          <th>Contractor</th>
+          <td>{{user.profile.contractor}}</td>
+        </tr>
+      </tbody>
+    </table>
+  {% endwith %}
+
+  {% with categories=object.get_inspection_category %}
+    {% for cid in categories.split %}
+      {% with category=object.get_json.questions|get:cid %}
+        {% if category %}
+          {% comment %} <h4>{{ category.label }}</h4> {% endcomment %}
+          <table class="first table w-100">
+            <thead  class="subhead table-primary">
+              <tr><th><small>IM</small></th><th colspan="2">{{category.label}}</th></tr>
+            </thead>
+            <tbody>
+              {% for question in category.questions %}
+                <tr key={`p1_${index}`}>
+                  <td class="ion-text-center im-no" style="width: 7%;">
+                    <small>{{ question.im |default:'-'}}</small>
+                  </td>
+                  <td class="question">
+                    {{question.label}}
+                  </td>
+                  <td 
+                    class="text-center serviceable{% if question.value == 'serviceable' %} table-success{% elif question.value == 'monitor' %} table-warning{% elif question.value == 'failed' %} table-danger{% endif %}" 
+                    style="width: 100px;"
+                  >
+                    {% if question.value is True %}
+                      &#x2714;
+                    {% else %}
+                      {{question.value|default:'-'}}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      {% endwith %}
+    {% endfor %}
+  {% endwith %}
+
+  {% if axle_list and object.is_tyre_section_present %}
+    <table key={categoryId} class="axles text-center w-100 mb-4">
+      <tbody>
+        <tr><td colspan="5" class="text-center"><small><strong>FRONT</strong></small></td></tr>
+        {% for axel in axle_list %}
+            <tr>
+              <td class="wheel">
+                <div class="tyre left"></div>
+                <h6>TREAD</h6>
+                <strong>Inner:</strong> {{axel.wheels|findTread:'L O inner'}}
+                <br/>
+                <strong>Centre:</strong> {{axel.wheels|findTread:'L O centre'}}
+                <br/>
+                <strong>Outer:</strong> {{axel.wheels|findTread:'L O outer'}}
+                
+                <h6>AIR</h6>
+                {{axel.wheels|findPressure:'L O bar'}} Bar / {{axel.wheels|findPressure:'L O psi'}} PSI
+                <h6>BLW</h6>
+                {{axel.blw.left|default:'&ndash;'}} mm
+              </td>
+              
+              {% if axel.doubleWheel %}
+                <td class="wheel">
+                  <div class="tyre left"></div>
+                  <h6>TREAD</h6>
+                  <strong>Inner:</strong> {{axel.wheels|findTread:'L I inner'}}
+                  <br/>
+                  <strong>Centre:</strong> {{axel.wheels|findTread:'L I centre'}}
+                  <br/>
+                  <strong>Outer:</strong> {{axel.wheels|findTread:'L I outer'}}
+                  <h6>AIR</h6>
+                  {{axel.wheels|findPressure:'L I bar'}} Bar / {{axel.wheels|findPressure:'L I psi'}} PSI
+                </td>
+              {% endif %}
+
+              <td colspan="{% if axel.doubleWheel %}1{% else %}3{% endif %}" class="axel ion-text-center">
+                <small>Axle {{forloop.counter}} ({% if axel.doubleWheel %}Double{% else %}Single{% endif %})</small>
+              </td>
+
+              {% if axel.doubleWheel %}
+                <td class="wheel">
+                  <div class="tyre right"></div>
+                  <h6>TREAD</h6>
+                  <strong>Inner:</strong> {{axel.wheels|findTread:'R I inner'}}<br/>
+                  <strong>Centre:</strong> {{axel.wheels|findTread:'R I centre'}}<br/>
+                  <strong>Outer:</strong> {{axel.wheels|findTread:'R I outer'}} 
+                  <h6>AIR</h6>
+                  {{axel.wheels|findPressure:'R I bar'}} Bar / {{axel.wheels|findPressure:'R I psi'}} PSI
+                </td>
+              {% endif %}
+
+              <td class="wheel">
+                <div class="tyre right"></div>
+                <h6>TREAD</h6>
+                <strong>Inner:</strong> {{axel.wheels|findTread:'R O inner'}}<br/>
+                <strong>Centre:</strong> {{axel.wheels|findTread:'R O centre'}}<br/>
+                <strong>Outer:</strong> {{axel.wheels|findTread:'R O outer'}}
+                <h6>AIR</h6>
+                {{axel.wheels|findPressure:'R O bar'}} Bar / {{axel.wheels|findPressure:'R O psi'}} PSI
+                {% comment %} {axel.wheels?.find(wheel=>wheel.side==='R'&&wheel.position==='O')?.pressure.bar ?? <>&ndash; </>} Bar / {axel.wheels?.find(wheel=>wheel.side==='R'&&wheel.position==='O')?.pressure.psi ?? <>&ndash; </>} PSI                               {% endcomment %}
+                <h6>BLW</h6>
+                {{axel.blw.right|default:'&ndash;'}} mm
+              </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% comment %}
+{% with category=object.get_json.questions.roadTester %}
+   <h4>{{ category.label }}</h4>
+  <table class="first table w-100">
+    <thead  class="subhead table-primary">
+      <tr><th><small>IM</small></th><th colspan="2">{{category.label}}</th></tr>
+    </thead>
+    <tbody>
+      {% for question in category.questions %}
+        <tr>
+          <td class="ion-text-center im-no">
+            <small>{{ question.im|join:","|default:'-'}}</small>
+          </td>
+          <th class="question">
+            {{question.label}}
+          </th>
+          <td 
+            class="text-center serviceable{% if question.value == 'serviceable' or question.value == True %} table-success{% elif question.value == 'monitor' %} table-warning{% elif question.value == 'failed' %} table-danger{% endif %}" 
+            style="width: 130px;"
+          >
+            {% if question.value is True %}
+              &#x2714;
+            {% else %}
+              {{question.value|default:'-'}}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endwith %}
+{% endcomment %}
+
+{% with category=object.get_json.questions.brakePerformance %}
+{% if category %}
+  <div>
+    <table  class="table first">
+      <thead class="subhead table-primary">
+        <tr>
+          <th colspan="2">Brake Performance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for question in category %}
+          <tr>
+            <td>{{question.label}}</td>
+            <td style="width: 130px;" class="serviceable text-center{% if question.value is True %} table-success{% endif %}">
+              {% if question.value is True %}&#x2714;{% elif question.value in 'Pass,Fail,Not carried out' %}{{question.value}}{% elif question.value %}{{question.value}}%{% else %}-{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      {% comment %} </tbody>
+    </table>
+    <table  className="second" style={{}}>
+      <thead className="subhead">
+        <tr>
+          <th colSpan={2}>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody> {% endcomment %}
+        {% comment %} {bpart2.map((question:any)=>{
+          return <tr key={question.id}>
+            <td>{question.label}</td>
+            <td  className="serviceable">{question.value===true?<span>Yes</span>:question.value ?? '-'}</td>
+          </tr>
+        })}
+      </tbody> {% endcomment %}
+    </table>
+  </div>
+{% endif %}
+{% endwith %}
+
+  {% comment %} {% with categories="tyreQuestions item-tyres" %}
+    {% for cid in categories.split %}
+      {% with category=object.get_json.questions|get:cid %}
+        {{category.label}}<br>
+      {% endwith %}
+    {% endfor %}
+  {% endwith %} {% endcomment %}
+  
+  {% comment %} <h4 class="text-danger">TODO: Add failed items!</h4> {% endcomment %}
+  
+    {% if failed_items %}
+      <table class="table w-100 rectificationsFail">
+        <thead class="table-danger">
+          <tr>
+            <th>IM</th>
+            <th>Failure</th>
+            <th>Detail</th>
+            <th>Action&nbsp;Type</th>
+            <th>Action&nbsp;Taken</th>
+            <th>Completed&nbsp;By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in failed_items %}
+            {% if item.responses %}
+              {% for response in item.responses %}
+                <tr>
+                  <td>{{ item.im|default:'-'}}</td>
+                  <td>{{item.label}}</td>
+                  <td>{{response.comment}}</td>
+                  <td>{{response.actionType}}</td>
+                  <td>{{response.action}}</td>
+                  <td>{{object.submitted_by.first_name|first }}{{object.submitted_by.last_name|first }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td>{{ item.im|default:'-'}}</td>
+                <td>{{item.label}}</td>
+                <td>{{item.comment}}</td>
+                <td>{{item.actionType}}</td>
+                <td>{{item.action}}</td>
+                <td>{{object.submitted_by.first_name|first }}{{object.submitted_by.last_name|first }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  
+
+    {% if monitored_items %}
+      <table class="table w-100 rectificationsFail">
+        <thead class="table-warning">
+          <tr>
+            <th>IM</th>
+            <th>Monitor</th>
+            <th>Detail</th>
+            <th>Action&nbsp;Type</th>
+            <th>Action&nbsp;Taken</th>
+            <th>Completed&nbsp;By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in monitored_items %}
+            {% if item.responses %}
+              {% for response in item.responses %}
+                <tr>
+                  <td>{{ item.im|default:'-'}}</td>
+                  <td>{{item.label}}</td>
+                  <td>{{response.comment}}</td>
+                  <td>{{response.actionType}}</td>
+                  <td>{{response.action}}</td>
+                  <td>{{object.submitted_by.first_name|first }}{{object.submitted_by.last_name|first }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td>{{ item.im|default:'-'}}</td>
+                <td>{{item.label}}</td>
+                <td>{{item.comment}}</td>
+                <td>{{item.actionType}}</td>
+                <td>{{item.action}}</td>
+                <td>{{object.submitted_by.first_name|first }}{{object.submitted_by.last_name|first }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+  {% comment %} <h4 class="text-warning">TODO: Add monitored items</h4>
+  {% with monitors=object.get_json.questions|monitoredItems %}
+    {% for item in monitors %}
+      {{item.label}}<br>
+    {% endfor %}
+  {% endwith %} {% endcomment %}
+
+  <div class="declaration border border-warning rounded px-4 pt-3">
+    <h4>Declaration</h4>
+    <div class="text-center float-end ms-4">
+      <img src="{{object.get_json.signature}}" style="height: 100px; width: auto;" />
+      <p><strong>{{ object.submitted_by.get_full_name }}</strong> - {{ object.submitted|date }}</p>
+    </div>
+    <p>
+      Items marked as `Monitored` are deemed to be servicable at the time of inspection 
+      and are marked as such to ensure they are highlighted on the next scheduled inspection.
+    </p>
+    <p>
+      I declare that this vehicle has been inspected in accordance with the current DVSA 
+      testers manual and all applicable items have been checked and found to be sevicable 
+      except as noted.
+    </p>
+    
+    <br/>
+  </div>
+</div>
+<p>
+  {{ pdfnote | markdown | safe }}
+</p>
+{% endblock content %}

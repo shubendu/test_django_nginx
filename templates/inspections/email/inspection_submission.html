@@ -1,0 +1,18 @@
+{% load i18n %}{% autoescape off %}{% block content %}
+Hello,
+{% blocktranslate %}This is a notification regarding the recent inspection submission by inspector {{inspector_name}} .{% endblocktranslate %}
+{% translate "Here are the details of the submission:" %}
+- Submitted by: {{ inspector_name }}
+- Date and Time: {{ submission_date }}
+- Inspection item: {{ inspection_item }}
+
+{% translate "Please go to the following link to view the inspection." %}
+{% block reset_link %}
+{{ protocol }}://{{ domain }}{% url 'inspections-detail' inspection_id %}
+{% endblock %}
+
+{% translate 'Best regards' %},
+{% blocktranslate %}The {{ domain }} team{% endblocktranslate %}
+
+{% endblock %}
+{% endautoescape %}

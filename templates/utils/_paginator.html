@@ -1,0 +1,49 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination mt-4">
+
+  <nav aria-label="Page navigation" class="m-auto">
+    <ul class="pagination">
+
+
+      <li class="page-item{% if page_obj.has_previous == False %} disabled{% endif %}">
+        <a class="page-link" href="?page=1{%if request.GET.order %}&amp;order={{request.GET.order}}{% endif %}{%if query %}&amp;q={{query}}{% endif %}{%if vehicle_type %}&amp;vehicleType={{vehicle_type}}{% endif %}{%if start_date %}&amp;startDate={{start_date}}{% endif %}{%if end_date %}&amp;endDate={{end_date}}{% endif %}"
+          aria-label="First">
+          <span aria-hidden="true"><i class="bi bi-chevron-bar-left"></i></span>
+        </a>
+      </li>
+
+      <li class="page-item{% if page_obj.has_previous == False %} disabled{% endif %}">
+        <a class="page-link"
+          href="?page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% endif %}{%if request.GET.order %}&amp;order={{request.GET.order}}{% endif %}{%if query %}&amp;q={{query}}{% endif %}{%if vehicle_type %}&amp;vehicleType={{vehicle_type}}{% endif %}{%if start_date %}&amp;startDate={{start_date}}{% endif %}{%if end_date %}&amp;endDate={{end_date}}{% endif %}"
+          aria-label="Previous">
+          <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+        </a>
+      </li>
+
+      <li class="page-item">
+        <p class="text-dark px-3 py-2">
+          {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </p>
+      </li>
+
+      <li class="page-item{% if page_obj.has_next == False %} disabled{% endif %}">
+        <a class="page-link"
+          href="?page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% endif %}{%if request.GET.order %}&amp;order={{request.GET.order}}{% endif %}{%if query %}&amp;q={{query}}{% endif %}{%if vehicle_type %}&amp;vehicleType={{vehicle_type}}{% endif %}{%if start_date %}&amp;startDate={{start_date}}{% endif %}{%if end_date %}&amp;endDate={{end_date}}{% endif %}"
+          aria-label="Next">
+          <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+        </a>
+      </li>
+
+      <li class="page-item{% if page_obj.has_next == False %} disabled{% endif %}">
+        <a class="page-link"
+          href="?page={{ page_obj.paginator.num_pages }}{%if request.GET.order %}&amp;order={{request.GET.order}}{% endif %}{%if query %}&amp;q={{query}}{% endif %}{%if vehicle_type %}&amp;vehicleType={{vehicle_type}}{% endif %}{%if start_date %}&amp;startDate={{start_date}}{% endif %}{%if end_date %}&amp;endDate={{end_date}}{% endif %}"
+          aria-label="Last">
+          <span aria-hidden="true"><i class="bi bi-chevron-bar-right"></i></span>
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+</div>
+{% endif %}

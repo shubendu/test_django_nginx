@@ -1,0 +1,41 @@
+<div class="mb-3 category-header" style="break-inside: avoid;">
+    <div class="d-flex ">
+        <div class="heading top-heading w-100 d-flex border-end">
+            <div class="title">
+                <div class="" style="width: 2.5em;">IM</div>
+                <div id="box-row-{{ id }}-label">{{ label }}</div>
+            </div>
+            
+            <div class="filter">
+                <input type="number" class="sort_order" id="box-row-{{ id }}-sort-order" placeholder="sort order" name="sort_order">
+                <input type="checkbox" onclick="toggle(this, `{{id}}`);">
+            </div>
+        </div>
+    </div>
+    <div class="table d-flex flex-row flex-wrap box-row class_question" id="box-row-{{ id }}-questions">
+        {% for question in questions %}
+        <div class="im-item w-100 d-flex">
+            <div class="cell text-center">{{ question.im|default:'-' }}</div>
+            <div class="cell text-center">{{ question.label }}</div>
+            <div class="cell ms-auto text-center fw-bold" style="width:50px;">
+                <input type="checkbox" name="{{ attribute }}${{ question.label }}"
+                    value="{{ question.label }}@{{ question.im|default:'-' }}" id="" class="{{ id }}">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="btn btn-primary mt-2" onclick="addQuestion(`{{id}}` ,`{{attribute}}`)">Add Question</div>
+</div>
+<style>
+    .top-heading{
+        justify-content: space-between; 
+        padding:7px 15px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+    }
+    .top-heading .title{display: flex; gap: 10px;}
+    .top-heading .filter{display: flex; gap:10px;}
+    .top-heading .filter input[type="number"]{width: 110px; margin-right: 15px; }
+
+    .table>.im-item>.cell:first-child{width: 3.4em;}
+</style>

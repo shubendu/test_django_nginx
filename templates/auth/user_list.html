@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col">
+      <h2>Users</h2>
+    </div>
+
+    {% if 'auth.add_user' in perms %}
+    <div class="col text-end">
+      <a class="btn btn-primary" href="{% url 'user-add' %}">+ Add User</a>
+    </div>
+    {% endif %}
+    
+  </div>
+  
+  {% include 'auth/_users.html' with users=object_list %}
+{% endblock content %}

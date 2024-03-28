@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% include 'auth/_user_detail.html' %}
+
+<h3>Inspections Submitted</h3>
+{% include 'inspections/_inspections.html' with inspections=object_list %}
+
+{% endblock content %}

@@ -1,0 +1,9 @@
+{% if messages %}
+  {% for message in messages %}
+  <div class="hideable">
+    <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}

@@ -1,0 +1,15 @@
+/* no underlines */
+.noDecoration {
+    text-decoration: none;
+}
+
+.body-container-section{
+    min-height: calc(100vh - 65px);
+    position: relative;
+    padding-bottom: 50px;
+}
+/* footer{
+    position: fixed;
+bottom: 0;
+width: 100%;
+} */

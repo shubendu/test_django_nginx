@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="get" action="{% url 'create_custom_template' %}">
+    <div class="form-group">
+        <label for="vehicle_type">Vehicle Type</label>
+        <select class="form-control" name="vehicle_type" id="vehicle_type">
+            <option value="powered">Powered Vehicle</option>
+            <option value="trailer">Trailer</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-outline-primary mt-3">Proceed</button>
+</form>
+{% endblock content %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10">
+        {% include 'search/search_form.html' %}
+        {% include 'inspections/_inspections.html' with inspections=object_list %}
+    </div>
+    <div class="col-lg-2">
+        {% include 'search/filter_form.html' %}
+    </div>
+</div>
+{% endblock %}
