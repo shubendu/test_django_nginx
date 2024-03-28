@@ -142,10 +142,10 @@ WSGI_APPLICATION = 'rs_inspection.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'mydatabaseuser',
-        'PASSWORD': 'mypassword',
-        'HOST': 'myrdshost.rds.amazonaws.com',
+        'NAME': 'database1',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'database1.cv2saw26e71a.ap-south-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
